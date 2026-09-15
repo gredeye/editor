@@ -206,4 +206,60 @@ public class RenderTest {
       wav.delete();
     }
   }
+
+  @Test
+  public void testActivityOpensSavedProject() throws Exception {
+    Project p = new Project();
+    p.name = "UI smoke";
+    new app.vynox.storage.ProjectStore(getContext()).save(p);
+    android.app.Instrumentation instrumentation =
+      InstrumentationRegistry.getInstrumentation();
+    android.app.Activity activity = instrumentation.startActivitySync(
+      new android.content.Intent(
+        getContext(),
+        app.vynox.ui.MainActivity.class
+      ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+    );
+    instrumentation.waitForIdleSync();
+    try {
+      instrumentation.runOnMainSync(() -> {
+        android.view.View button = findText(
+          activity.getWindow().getDecorView(),
+          "UI smoke",
+          true
+        );
+        assertNotNull("Saved project must appear on Home", button);
+        button.performClick();
+        assertNotNull(
+          "Editor controls must be visible",
+          findText(activity.getWindow().getDecorView(), "Inspector", false)
+        );
+      });
+    } finally {
+      instrumentation.runOnMainSync(activity::finish);
+    }
+  }
+
+  private android.view.View findText(
+    android.view.View view,
+    String text,
+    boolean startsWith
+  ) {
+    if (view instanceof android.widget.TextView) {
+      String value = ((android.widget.TextView) view).getText().toString();
+      if (startsWith ? value.startsWith(text) : value.equals(text)) return view;
+    }
+    if (view instanceof android.view.ViewGroup) {
+      android.view.ViewGroup group = (android.view.ViewGroup) view;
+      for (int i = 0; i < group.getChildCount(); i++) {
+        android.view.View result = findText(
+          group.getChildAt(i),
+          text,
+          startsWith
+        );
+        if (result != null) return result;
+      }
+    }
+    return null;
+  }
 }

@@ -394,7 +394,14 @@ public final class VideoExporter {
         buffer.clear();
         int n = x.readSampleData(buffer, 0);
         if (n < 0) break;
-        info.set(0, n, time, x.getSampleFlags());
+        if (
+          (x.getSampleFlags() & MediaExtractor.SAMPLE_FLAG_ENCRYPTED) != 0
+        ) throw new IOException("Encrypted output cannot be muxed");
+        int flags =
+          (x.getSampleFlags() & MediaExtractor.SAMPLE_FLAG_SYNC) != 0
+            ? MediaCodec.BUFFER_FLAG_KEY_FRAME
+            : 0;
+        info.set(0, n, time, flags);
         mux.writeSampleData(tracks.get(best), buffer, info);
         x.advance();
       }
