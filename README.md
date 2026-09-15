@@ -4,7 +4,7 @@
 
 [Download website](https://gredeye.github.io/editor/) · [Releases](https://github.com/gredeye/editor/releases) · [Verification status](VERIFICATION.md) · [Project format](docs/VNX_FORMAT.md)
 
-> **Status: initial implementation, not yet production-certified.** Real editing, composition rendering and platform encoding paths are implemented—not a web mockup or screen recorder. The Android application sources have been independently type-checked and 30 JVM tests pass, and the Android 35 emulator suite now passes (including activity startup and real MP4 export). Full lint/build CI is still being resolved; see verification status. Read [VERIFICATION.md](VERIFICATION.md) before treating this as release-ready. A download is available only after a signed release succeeds.
+> **Status: initial implementation, not yet production-certified.** Real editing, composition rendering and platform encoding paths are implemented—not a web mockup or screen recorder. GitHub CI passes: debug/release builds, Android lint, 30 JVM tests, six Android 35 emulator tests (including startup and real MP4 export), six release-safety tests and four website-state tests. Read [VERIFICATION.md](VERIFICATION.md) before treating this as release-ready. A download is available only after a signed release succeeds.
 
 ## Features implemented
 
@@ -143,7 +143,7 @@ No version-specific URL is hard-coded. The site fetches public release metadata 
 
 This implementation does **not** satisfy every aspect of a mature Alight Motion-class production editor yet:
 
-- **Emulator-verified, not physical-device certified.** Android 35 instrumentation passes for startup, import, composition, MP4 export, audio and cancellation. This is not evidence of realtime performance or broad vendor/device compatibility. Complete CI must pass before release.
+- **Emulator-verified, not physical-device certified.** Android 35 instrumentation passes for startup, import, composition, MP4 export, audio and cancellation. This is not evidence of realtime performance or broad vendor/device compatibility. CI is green; broad physical-device validation and the limitations below remain production gates.
 - CPU/Canvas rendering and per-frame `MediaMetadataRetriever` video decoding prioritize a simple shared composition path over realtime performance. Preview is capped at 640 pixels wide and may drop visual frames; audio is the playback clock. Many/high-resolution layers or effects can use significant RAM and render slowly. 4K settings are not a performance guarantee.
 - Preview transport initially decodes source audio to disk. Audio uses PCM16, linear sample-rate conversion and hard-clamped stereo mixing, not a mastering-grade resampler/limiter. No waveform, pitch/time-stretch, reverse playback, or audio fades UI (volume keyframes can create fades). Nonzero stream offsets, encoder priming, variable-frame-rate edge cases and long-media A/V sync need device validation.
 - Export depends on a device AVC encoder accepting flexible YUV input and an AAC encoder. Unsupported devices produce an explicit error; no GPU/surface fallback exists yet. No HDR, alpha-video, HEVC, GIF or color-managed wide-gamut export.

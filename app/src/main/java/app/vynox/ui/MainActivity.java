@@ -971,14 +971,11 @@ public final class MainActivity extends Activity {
       0
     );
     new AlertDialog.Builder(this)
-      .setTitle("Settings")
+      .setTitle("Settings · local autosave always on")
       .setMultiChoiceItems(
         new String[] { "Timeline snapping" },
         new boolean[] { prefs.getBoolean("snapping", true) },
         (d, n, value) -> prefs.edit().putBoolean("snapping", value).apply()
-      )
-      .setMessage(
-        "Local autosave is always enabled. Projects and copied media stay on this device. No analytics or internet permission."
       )
       .setPositiveButton("Done", null)
       .show();
