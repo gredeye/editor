@@ -2,7 +2,7 @@
     <application android:theme="@style/Theme.Vynox" android:label="Vynox" android:icon="@drawable/ic_vynox" android:allowBackup="false" android:supportsRtl="true">
         <activity android:name=".ui.MainActivity" android:exported="true" android:configChanges="orientation|screenSize" android:windowSoftInputMode="adjustResize">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
-            <intent-filter><action android:name="android.intent.action.VIEW"/><category android:name="android.intent.category.DEFAULT"/><category android:name="android.intent.category.BROWSABLE"/><data android:mimeType="application/vnd.vynox.project"/></intent-filter>
+            <intent-filter><action android:name="android.intent.action.VIEW"/><category android:name="android.intent.category.DEFAULT"/><data android:mimeType="application/vnd.vynox.project"/></intent-filter>
         </activity>
         <service android:name=".render.ExportService" android:exported="false" android:foregroundServiceType="dataSync|mediaProcessing"/>
     </application>

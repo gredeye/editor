@@ -4,7 +4,7 @@
 
 [Download website](https://gredeye.github.io/editor/) · [Releases](https://github.com/gredeye/editor/releases) · [Verification status](VERIFICATION.md) · [Project format](docs/VNX_FORMAT.md)
 
-> **Status: initial implementation, not yet production-certified.** Real editing, composition rendering and platform encoding paths are implemented—not a web mockup or screen recorder. The Android application sources have been independently type-checked and 30 JVM tests pass, but no APK has been built or device-tested in this workspace. Read [VERIFICATION.md](VERIFICATION.md) before treating this as release-ready. A download is available only after a signed release succeeds.
+> **Status: initial implementation, not yet production-certified.** Real editing, composition rendering and platform encoding paths are implemented—not a web mockup or screen recorder. The Android application sources have been independently type-checked and 30 JVM tests pass, and the Android 35 emulator suite now passes (including activity startup and real MP4 export). Full lint/build CI is still being resolved; see verification status. Read [VERIFICATION.md](VERIFICATION.md) before treating this as release-ready. A download is available only after a signed release succeeds.
 
 ## Features implemented
 
@@ -83,6 +83,7 @@ sdkmanager --licenses
 ./gradlew --no-daemon testDebugUnitTest lintDebug
 python3 scripts/validate.py
 python3 -m unittest discover -s scripts -p 'test_*.py'
+node --test scripts/site.test.cjs
 ```
 
 Windows: use `gradlew.bat`. Alternatively open the repository in Android Studio and let it install the declared SDK. Never add `local.properties` or local tool installations to Git.
@@ -122,7 +123,7 @@ For an authorized local signed build, configure `VYNOX_KEYSTORE_PATH` to a keyst
 5. It signs/verifies the APK, creates the matching tag and draft GitHub Release if absent, attaches stable-name `Vynox.apk` and `Vynox.apk.sha256`, generates notes, then publishes.
 6. It explicitly calls the reusable Pages workflow. This avoids GitHub's restriction that events created using `GITHUB_TOKEN` generally do not trigger another workflow.
 
-The `production` environment can be configured with required reviewers and protected-branch restrictions. Do not disable protection to run a release. Release concurrency is serialized. Published releases are immutable in the publishing script; tag conflicts, downgrades or mismatched draft assets fail safely. A failed draft can be resumed only when existing bytes agree; nondeterministic rebuild bytes may require manual draft review. A release already published from the same tag is left untouched. A failed Pages deployment can be rerun separately without rebuilding or resigning the APK.
+Third-party Actions are pinned to full commit SHAs (with version comments) and Dependabot tracks updates. The `production` environment can be configured with required reviewers and protected-branch restrictions. Do not disable protection to run a release. Release concurrency is serialized. Published releases are immutable in the publishing script; tag conflicts, downgrades or mismatched draft assets fail safely. A failed draft can be resumed only when existing bytes agree; nondeterministic rebuild bytes may require manual draft review. A release already published from the same tag is left untouched. A failed Pages deployment can be rerun separately without rebuilding or resigning the APK.
 
 ## GitHub Pages
 
@@ -142,7 +143,7 @@ No version-specific URL is hard-coded. The site fetches public release metadata 
 
 This implementation does **not** satisfy every aspect of a mature Alight Motion-class production editor yet:
 
-- **No verified APK/device results yet in this workspace.** JVM tests are not evidence of working Android codecs, realtime preview, UI layout or Android lifecycle behavior. The instrumentation suite and workflow must run successfully before release.
+- **Emulator-verified, not physical-device certified.** Android 35 instrumentation passes for startup, import, composition, MP4 export, audio and cancellation. This is not evidence of realtime performance or broad vendor/device compatibility. Complete CI must pass before release.
 - CPU/Canvas rendering and per-frame `MediaMetadataRetriever` video decoding prioritize a simple shared composition path over realtime performance. Preview is capped at 640 pixels wide and may drop visual frames; audio is the playback clock. Many/high-resolution layers or effects can use significant RAM and render slowly. 4K settings are not a performance guarantee.
 - Preview transport initially decodes source audio to disk. Audio uses PCM16, linear sample-rate conversion and hard-clamped stereo mixing, not a mastering-grade resampler/limiter. No waveform, pitch/time-stretch, reverse playback, or audio fades UI (volume keyframes can create fades). Nonzero stream offsets, encoder priming, variable-frame-rate edge cases and long-media A/V sync need device validation.
 - Export depends on a device AVC encoder accepting flexible YUV input and an AAC encoder. Unsupported devices produce an explicit error; no GPU/surface fallback exists yet. No HDR, alpha-video, HEVC, GIF or color-managed wide-gamut export.
@@ -160,4 +161,4 @@ This implementation does **not** satisfy every aspect of a mature Alight Motion-
 3. Gesture transform/trim handles, waveform/thumbnail generation, accessible property controls, tablet workspace and usability review.
 4. Arbitrary path masks, font embedding, color keyframes, better text layout and custom effect plug-ins.
 5. Streaming archive progress/cancellation, storage quotas/garbage collection, recovery history and longer export lifecycle tests.
-6. Security/release review, dependency action pinning, performance benchmarks and an explicit distribution license.
+6. Security/release review, performance benchmarks and an explicit distribution license.
