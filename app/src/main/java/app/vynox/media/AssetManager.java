@@ -102,6 +102,14 @@ public final class AssetManager {
           );
         a.width = w == null ? 0 : Integer.parseInt(w);
         a.height = h == null ? 0 : Integer.parseInt(h);
+        String rotation = r.extractMetadata(
+          MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
+        );
+        if ("90".equals(rotation) || "270".equals(rotation)) {
+          int swap = a.width;
+          a.width = a.height;
+          a.height = swap;
+        }
       } catch (Exception e) {
         file.delete();
         throw new IOException("Unsupported media", e);

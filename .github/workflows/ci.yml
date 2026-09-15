@@ -34,6 +34,9 @@ jobs:
           node --test scripts/site.test.cjs
       - name: Test, lint, debug APK and unsigned release APK
         run: gradle --no-daemon testDebugUnitTest lintDebug assembleDebug assembleRelease
+      - name: Annotate lint failures
+        if: failure()
+        run: python3 scripts/report_lint.py
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
