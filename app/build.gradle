@@ -1,0 +1,42 @@
+plugins { id 'com.android.application' }
+def version = new Properties()
+rootProject.file('version.properties').withInputStream { version.load(it) }
+def signingPath = System.getenv('VYNOX_KEYSTORE_PATH')
+android {
+    namespace 'app.vynox'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'app.vynox'
+        minSdk 29
+        targetSdk 35
+        versionCode version.getProperty('versionCode').toInteger()
+        versionName version.getProperty('versionName')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+    signingConfigs {
+        release {
+            if (signingPath) {
+                storeFile file(signingPath)
+                storePassword System.getenv('VYNOX_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('VYNOX_KEY_ALIAS')
+                keyPassword System.getenv('VYNOX_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            if (signingPath) signingConfig signingConfigs.release
+            minifyEnabled false
+        }
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    buildFeatures { buildConfig true }
+    testOptions { unitTests.returnDefaultValues = true }
+    lint { abortOnError true }
+}
+dependencies {
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20240303'
+}
