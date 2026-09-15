@@ -25,7 +25,8 @@ The isolated compiler and test tools were downloaded into ignored `.tools/`. The
 - A Java runtime and Eclipse compiler could be obtained via npm packages, and API/JSON source artifacts via GitHub. This enabled the independent checks above.
 - `./gradlew --no-daemon testDebugUnitTest assembleDebug assembleRelease` was attempted with that runtime. Wrapper distribution download fails with `SSLHandshakeException` / peer shutdown at `services.gradle.org`.
 - Google SDK and Maven dependency download paths are also inaccessible here. Therefore **no Gradle debug/release APK, Android lint result or connected Android test result exists from this workspace**.
-- GitHub metadata reports no push/admin permissions; protected-branch/Actions administration queries return `403 Resource not accessible by integration`. No secrets were read or printed.
+- GitHub permission metadata reported no push/admin permissions, but an actual branch push and PR creation succeeded. Protected-branch/Actions administration queries return `403 Resource not accessible by integration`. No secrets were read or printed.
+- [PR #1](https://github.com/gredeye/editor/pull/1) is open. The first GitHub-hosted CI run failed during Android SDK setup, before compilation/tests. Action versions and SDK package selection have been updated; subsequent results must be reviewed. Runner log download hosts are also inaccessible from this workspace.
 
 ## Not verified / not published
 
