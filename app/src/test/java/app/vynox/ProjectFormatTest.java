@@ -56,11 +56,7 @@ public class ProjectFormatTest {
       0
     );
     assertEquals(Project.Blend.SCREEN, b.layers.get(0).blend);
-    assertTrue(
-      new JSONObject(ProjectJson.encode(a)).similar(
-        new JSONObject(ProjectJson.encode(b))
-      )
-    );
+    assertEquals(ProjectJson.encode(a), ProjectJson.encode(b));
   }
 
   @Test(expected = JSONException.class)
